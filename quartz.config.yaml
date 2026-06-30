@@ -7,7 +7,7 @@ configuration:
   analytics:
     provider: plausible
   locale: zh-CN
-  baseUrl: lilyliu.github.io/brand-marketing-quartz
+  baseUrl: yingliu00000.github.io/brand-marketing-quartz
   ignorePatterns:
     - private
     - templates
