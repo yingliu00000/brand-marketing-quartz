@@ -39,6 +39,12 @@ jobs:
       - name: Build Quartz
         run: node ./quartz/bootstrap-cli.mjs build
 
+      - name: Prepare public chat entry
+        run: |
+          rm -rf public
+          mkdir -p public
+          cp -R site/. public/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
