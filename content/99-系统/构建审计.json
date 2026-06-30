@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-06-29T18:45:12.938Z",
+  "source_root": "C:\\Users\\Lily.Liu\\工作文件\\skill整理\\爬数skill\\程安公众号需求\\历史公众号数据爬取\\output_md",
+  "vault_root": "C:\\Users\\Lily.Liu\\Documents\\品牌营销知识库",
+  "structure": {
+    "top_level_folders": 46,
+    "markdown_files": 7428,
+    "extensions": {
+      ".html": 7428,
+      ".csv": 46,
+      ".json": 90,
+      ".md": 7428,
+      ".txt": 1,
+      ".log": 3
+    }
+  },
+  "output": {
+    "articles": 7428,
+    "chunks": 24933,
+    "knowledge_atoms": 26427,
+    "sample_units": 25,
+    "accounts": 45,
+    "topics": 12,
+    "anomalies": 494
+  },
+  "dbskill_alignment": [
+    "Preserve source article and URL for every local note.",
+    "Generate JSONL knowledge atoms with knowledge/original/url/date/topics/type/confidence fields.",
+    "Keep machine tags and topics as retrieval handles, not factual conclusions.",
+    "Use chunk-level evidence for AI QA and article/report topic generation."
+  ]
+}

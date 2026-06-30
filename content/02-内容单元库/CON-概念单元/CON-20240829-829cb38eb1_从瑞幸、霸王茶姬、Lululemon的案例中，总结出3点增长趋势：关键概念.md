@@ -1,0 +1,45 @@
+﻿---
+id: "CON-20240829-829cb38eb1"
+type: "CON"
+title: "从瑞幸、霸王茶姬、Lululemon的案例中，总结出3点增长趋势：关键概念"
+canonical: "本质上他们是互联网公司，是大数据公司，商业模型必须要算明白，这个事才能成。"
+version: 1
+source_documents:
+  - "wm-2024-08-29-6e3e8112d8"
+source_url: "https://mp.weixin.qq.com/s/Z92LTOxQgtyV8Hpul6wJ-w"
+source_note: "01-原始素材区/完整副本/按公众号/韩叙HanXu/2024-08-29 从瑞幸、霸王茶姬、Lululemon的案例中，总结出3点增长趋势 wm-2024-08-29-6e3e8112d8.md"
+source_path: "C:\\Users\\Lily.Liu\\工作文件\\skill整理\\爬数skill\\程安公众号需求\\历史公众号数据爬取\\output_md\\韩叙HanXu\\markdown\\144_2024-08-29_从瑞幸、霸王茶姬、Lululemon的案例中，总结出3点增长趋势_caa16119.md"
+themes: ["案例与方法论", "数据与归因", "新消费与品类", "出海与全球化", "广告与媒介"]
+keywords: ["案例", "模型", "策略", "方案", "数据", "分析", "品类", "饮料", "咖啡", "东南亚", "广告", "投放"]
+relationships:
+  - type: "解释"
+    target: "QST-20240829-d2f2bd89b8"
+confidence: 0.92
+---
+
+# 从瑞幸、霸王茶姬、Lululemon的案例中，总结出3点增长趋势：关键概念
+
+## 单元类型
+
+CON：概念单元
+
+## 核心表达
+
+本质上他们是互联网公司，是大数据公司，商业模型必须要算明白，这个事才能成。
+
+## 原文证据
+
+> 本质上他们是互联网公司，是大数据公司，商业模型必须要算明白，这个事才能成。
+
+## 来源追踪
+
+- 原文文章：[[2024-08-29 从瑞幸、霸王茶姬、Lululemon的案例中，总结出3点增长趋势 wm-2024-08-29-6e3e8112d8]]
+- 原文链接：[点击打开微信原文](https://mp.weixin.qq.com/s/Z92LTOxQgtyV8Hpul6wJ-w)
+- 公众号：韩叙HanXu
+- 日期：2024-08-29
+- 来源文件：C:\Users\Lily.Liu\工作文件\skill整理\爬数skill\程安公众号需求\历史公众号数据爬取\output_md\韩叙HanXu\markdown\144_2024-08-29_从瑞幸、霸王茶姬、Lululemon的案例中，总结出3点增长趋势_caa16119.md
+
+## 关系
+
+- 解释：QST-20240829-d2f2bd89b8
+
