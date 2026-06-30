@@ -1,0 +1,8 @@
+{
+  "name": "品牌营销知识库",
+  "short_name": "营销知识库",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff"
+}
