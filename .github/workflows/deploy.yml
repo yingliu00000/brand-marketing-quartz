@@ -31,6 +31,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Create Quartz plugin shim
+        run: |
+          mkdir -p .quartz
+          printf 'export const CustomOgImagesEmitterName = "CustomOgImages"\n' > .quartz/plugins.ts
+
       - name: Build Quartz
         run: npx quartz build
 
