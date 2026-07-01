@@ -227,6 +227,35 @@ input {
   font-weight: 650;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.model-picker {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 8px 0 12px;
+  color: var(--muted);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.model-picker select {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-weight: 760;
+  cursor: pointer;
+}
+
 .status-pill {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -318,6 +347,91 @@ input {
   background: #f8fafc;
 }
 
+.sources {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.sources-heading {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 760;
+  margin-bottom: 8px;
+}
+
+.source-list {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.source-item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border: 1px solid #e5ebf3;
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #fbfcfe;
+}
+
+.source-index {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--soft);
+  color: #43506a;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.source-main {
+  min-width: 0;
+}
+
+.source-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.source-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.source-link {
+  color: #172033;
+  font-size: 13px;
+  font-weight: 760;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #fff;
+}
+
+.source-link:hover {
+  border-color: #b9c7d8;
+  background: #f4f7fb;
+}
+
+.source-link.muted {
+  color: var(--muted);
+}
+
 .composer {
   position: absolute;
   left: 50%;
@@ -400,6 +514,23 @@ input {
   .top-title span,
   .status-pill {
     display: none;
+  }
+
+  .top-actions {
+    margin-left: auto;
+  }
+
+  .model-picker span {
+    display: none;
+  }
+
+  .source-item {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+
+  .source-link {
+    grid-column: 2;
+    justify-self: start;
   }
 
   .empty {
