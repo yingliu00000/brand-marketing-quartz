@@ -256,6 +256,18 @@ input {
   cursor: pointer;
 }
 
+.account-button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 12px;
+  background: #172033;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 760;
+}
+
 .status-pill {
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -445,6 +457,18 @@ input {
   padding: 12px;
 }
 
+.quota-notice {
+  display: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  padding: 0 12px 4px;
+}
+
+.quota-notice.visible {
+  display: block;
+}
+
 .composer textarea {
   width: 100%;
   min-height: 48px;
@@ -476,6 +500,108 @@ input {
   background: #ffffff;
   color: #334158;
   cursor: pointer;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(23, 32, 51, 0.28);
+}
+
+.modal {
+  width: min(480px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(23, 32, 51, 0.2);
+  padding: 18px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.modal h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.modal p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.icon-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+  color: #43506a;
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.field input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: 0;
+  padding: 0 12px;
+  color: var(--text);
+}
+
+.field input:focus {
+  border-color: #a9b8cc;
+  box-shadow: 0 0 0 3px rgba(169, 184, 204, 0.2);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 760;
+}
+
+.primary-button {
+  border: 1px solid #172033;
+  background: #172033;
+  color: #ffffff;
+}
+
+.secondary-button {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: #43506a;
 }
 
 .send-button {
@@ -522,6 +648,10 @@ input {
 
   .model-picker span {
     display: none;
+  }
+
+  .account-button {
+    padding: 0 10px;
   }
 
   .source-item {
