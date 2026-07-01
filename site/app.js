@@ -11,26 +11,70 @@ const sessionsEl = document.querySelector("#sessions");
 const historySearch = document.querySelector("#historySearch");
 const statusEl = document.querySelector("#connectionStatus");
 const modelSelect = document.querySelector("#modelSelect");
+const accountButton = document.querySelector("#accountButton");
+const settingsButton = document.querySelector("#settingsButton");
+const quotaNotice = document.querySelector("#quotaNotice");
+const accountModal = document.querySelector("#accountModal");
+const closeAccountModal = document.querySelector("#closeAccountModal");
+const saveAccountButton = document.querySelector("#saveAccountButton");
+const logoutButton = document.querySelector("#logoutButton");
+const accountNameInput = document.querySelector("#accountName");
+const userApiKeyInput = document.querySelector("#userApiKey");
 
-const STORAGE_KEY = "brand-marketing-chat-sessions";
+const ACTIVE_ACCOUNT_KEY = "brand-marketing-active-account";
 const MODEL_KEY = "brand-marketing-chat-model";
-let sessions = loadSessions();
-let activeSessionId = sessions[0]?.id || createSession().id;
+const FREE_LIMIT = 5;
+
+let activeAccountId = localStorage.getItem(ACTIVE_ACCOUNT_KEY) || "";
+let account = loadAccount(activeAccountId);
+let sessions = account ? loadSessions() : [];
+let activeSessionId = sessions[0]?.id || (account ? createSession().id : "");
 
 if (modelSelect) {
   modelSelect.value = localStorage.getItem(MODEL_KEY) || "deepseek-v4-flash";
 }
 
-function loadSessions() {
+function accountKey(accountId) {
+  return `brand-marketing-account:${accountId}`;
+}
+
+function sessionsKey() {
+  return `brand-marketing-chat-sessions:${account.id}`;
+}
+
+function normalizeAccountId(name) {
+  return name.trim().toLowerCase().replace(/\s+/g, "-").slice(0, 60);
+}
+
+function loadAccount(accountId) {
+  if (!accountId) return null;
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const saved = JSON.parse(localStorage.getItem(accountKey(accountId)) || "null");
+    if (saved?.id && saved?.name) return saved;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function saveAccount(accountData = account) {
+  if (!accountData?.id) return;
+  localStorage.setItem(accountKey(accountData.id), JSON.stringify(accountData));
+  localStorage.setItem(ACTIVE_ACCOUNT_KEY, accountData.id);
+}
+
+function loadSessions() {
+  if (!account) return [];
+  try {
+    return JSON.parse(localStorage.getItem(sessionsKey()) || "[]");
   } catch {
     return [];
   }
 }
 
 function saveSessions() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions.slice(0, 20)));
+  if (!account) return;
+  localStorage.setItem(sessionsKey(), JSON.stringify(sessions.slice(0, 50)));
 }
 
 function createSession() {
@@ -47,6 +91,7 @@ function createSession() {
 }
 
 function activeSession() {
+  if (!account) return null;
   return sessions.find((session) => session.id === activeSessionId) || createSession();
 }
 
@@ -56,8 +101,21 @@ function setActiveSession(id) {
   renderSessions();
 }
 
+function remainingFree() {
+  if (!account) return 0;
+  return Math.max(0, FREE_LIMIT - (account.freeUsed || 0));
+}
+
+function hasUserApiKey() {
+  return Boolean(account?.userApiKey);
+}
+
+function canAsk() {
+  return Boolean(account && (remainingFree() > 0 || hasUserApiKey()));
+}
+
 function escapeHtml(value) {
-  return value
+  return String(value || "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -122,12 +180,26 @@ function messageTemplate(message) {
 }
 
 function renderMessages() {
+  if (!account) {
+    messagesEl.innerHTML = `
+      <div class="empty">
+        <h1>先登录一个账号</h1>
+        <p>每个账号免费提问 5 次。免费额度用完后，填写自己的 DeepSeek API Key 继续使用，并保留该账号自己的历史记录。</p>
+        <div class="prompts">
+          <button type="button" data-open-account>登录 / 创建账号</button>
+        </div>
+      </div>
+    `;
+    document.querySelector("[data-open-account]")?.addEventListener("click", openAccountModal);
+    return;
+  }
+
   const session = activeSession();
   if (session.messages.length === 0) {
     messagesEl.innerHTML = `
       <div class="empty">
         <h1>今天想拆哪个品牌营销问题？</h1>
-        <p>可以问增长策略、私域运营、内容营销、消费者洞察、品牌案例和品类趋势。公开页面只提供问答入口，不展示全量文章库。</p>
+        <p>可以问增长策略、私域运营、内容营销、消费者洞察、品牌案例和品类趋势。每个账号免费 5 次，之后使用自己的 DeepSeek API Key。</p>
         <div class="prompts">
           <button type="button" data-prompt="帮我拆一个新消费品牌的增长策略，先看哪些维度？">新消费品牌增长，先看哪些维度？</button>
           <button type="button" data-prompt="小红书内容种草怎么判断是不是有效？">小红书种草效果怎么判断？</button>
@@ -144,6 +216,11 @@ function renderMessages() {
 }
 
 function renderSessions() {
+  if (!account) {
+    sessionsEl.innerHTML = `<div class="session-empty">登录后显示历史</div>`;
+    return;
+  }
+
   const query = historySearch?.value?.trim() || "";
   const filtered = sessions.filter((session) => session.title.includes(query));
 
@@ -164,6 +241,35 @@ function renderSessions() {
   });
 }
 
+function renderAccountState() {
+  if (!account) {
+    accountButton.textContent = "登录";
+    statusEl.textContent = "登录后可提问";
+    quotaNotice.textContent = "请先登录或创建账号。";
+    quotaNotice.classList.add("visible");
+    input.disabled = true;
+    sendButton.disabled = true;
+    return;
+  }
+
+  const remain = remainingFree();
+  accountButton.textContent = account.name;
+  statusEl.textContent = hasUserApiKey()
+    ? "使用自己的 DeepSeek Key"
+    : `免费额度剩余 ${remain}/${FREE_LIMIT}`;
+
+  if (remain > 0) {
+    quotaNotice.textContent = `${account.name}：免费额度剩余 ${remain}/${FREE_LIMIT}`;
+  } else if (hasUserApiKey()) {
+    quotaNotice.textContent = `${account.name}：免费额度已用完，当前使用自己的 DeepSeek API Key`;
+  } else {
+    quotaNotice.textContent = `${account.name}：免费 5 次已用完，请点右下角设置自己的 DeepSeek API Key`;
+  }
+  quotaNotice.classList.add("visible");
+  input.disabled = !canAsk();
+  sendButton.disabled = !canAsk();
+}
+
 function bindPromptButtons() {
   document.querySelectorAll("[data-prompt]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -180,12 +286,63 @@ function autoResize() {
 }
 
 function setBusy(isBusy) {
-  input.disabled = isBusy;
-  sendButton.disabled = isBusy;
+  input.disabled = isBusy || !canAsk();
+  sendButton.disabled = isBusy || !canAsk();
   sendButton.textContent = isBusy ? "…" : "↗";
 }
 
+function openAccountModal() {
+  accountNameInput.value = account?.name || "";
+  userApiKeyInput.value = account?.userApiKey || "";
+  accountModal.hidden = false;
+  setTimeout(() => accountNameInput.focus(), 0);
+}
+
+function closeModal() {
+  accountModal.hidden = true;
+}
+
+function switchAccount(name, userApiKey) {
+  const id = normalizeAccountId(name);
+  if (!id) return;
+
+  const saved = loadAccount(id);
+  account = saved || {
+    id,
+    name: name.trim(),
+    freeUsed: 0,
+    userApiKey: "",
+    createdAt: Date.now(),
+  };
+  account.name = name.trim();
+  account.userApiKey = userApiKey.trim();
+  saveAccount();
+  activeAccountId = account.id;
+  sessions = loadSessions();
+  activeSessionId = sessions[0]?.id || createSession().id;
+  renderAll();
+}
+
+function logout() {
+  localStorage.removeItem(ACTIVE_ACCOUNT_KEY);
+  activeAccountId = "";
+  account = null;
+  sessions = [];
+  activeSessionId = "";
+  closeModal();
+  renderAll();
+}
+
 async function sendMessage(text) {
+  if (!account) {
+    openAccountModal();
+    return;
+  }
+  if (!canAsk()) {
+    openAccountModal();
+    return;
+  }
+
   const session = activeSession();
   session.messages.push({ role: "user", content: text });
   session.title = text.slice(0, 28) || "新建提问";
@@ -201,11 +358,13 @@ async function sendMessage(text) {
 
   try {
     const selectedModel = modelSelect?.value || "deepseek-v4-flash";
+    const useUserKey = remainingFree() <= 0 && hasUserApiKey();
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: selectedModel,
+        userApiKey: useUserKey ? account.userApiKey : "",
         messages: session.messages
           .filter((message) => message.content !== "正在调用 DeepSeek 分析...")
           .map((message) => ({ role: message.role, content: message.content }))
@@ -218,20 +377,33 @@ async function sendMessage(text) {
       throw new Error(data.error || `接口请求失败：${response.status}`);
     }
 
+    if (!useUserKey) {
+      account.freeUsed = (account.freeUsed || 0) + 1;
+      saveAccount();
+    }
     assistantMessage.content = data.answer || "DeepSeek 没有返回内容。";
     assistantMessage.sources = data.sources || [];
     assistantMessage.model = data.model || selectedModel;
-    statusEl.textContent = `DeepSeek ${assistantMessage.model.includes("pro") ? "Pro" : "Flash"} 已接入`;
+    statusEl.textContent = useUserKey
+      ? `DeepSeek ${assistantMessage.model.includes("pro") ? "Pro" : "Flash"}，用户 Key`
+      : `DeepSeek ${assistantMessage.model.includes("pro") ? "Pro" : "Flash"}，免费额度`;
   } catch (error) {
-    assistantMessage.content = `暂时没有连上 DeepSeek 后端：${error.message}\n\n如果这是刚部署的页面，需要先在阿里云后端配置 DEEPSEEK_API_KEY，并把前端 apiBase 指向后端域名。`;
+    assistantMessage.content = `暂时没有连上 DeepSeek 后端：${error.message}`;
     assistantMessage.sources = [];
     statusEl.textContent = "等待后端连接";
   } finally {
     saveSessions();
     renderMessages();
     renderSessions();
+    renderAccountState();
     setBusy(false);
   }
+}
+
+function renderAll() {
+  renderAccountState();
+  renderMessages();
+  renderSessions();
 }
 
 composer.addEventListener("submit", async (event) => {
@@ -252,6 +424,10 @@ input.addEventListener("keydown", (event) => {
 });
 
 newChatButton.addEventListener("click", () => {
+  if (!account) {
+    openAccountModal();
+    return;
+  }
   const session = createSession();
   setActiveSession(session.id);
   input.focus();
@@ -262,7 +438,16 @@ modelSelect?.addEventListener("change", () => {
   localStorage.setItem(MODEL_KEY, modelSelect.value);
   statusEl.textContent = `DeepSeek ${modelSelect.value.includes("pro") ? "Pro" : "Flash"} 已选择`;
 });
+accountButton?.addEventListener("click", openAccountModal);
+settingsButton?.addEventListener("click", openAccountModal);
+closeAccountModal?.addEventListener("click", closeModal);
+accountModal?.addEventListener("click", (event) => {
+  if (event.target === accountModal) closeModal();
+});
+saveAccountButton?.addEventListener("click", () => {
+  switchAccount(accountNameInput.value, userApiKeyInput.value);
+  closeModal();
+});
+logoutButton?.addEventListener("click", logout);
 
-renderMessages();
-renderSessions();
-bindPromptButtons();
+renderAll();
