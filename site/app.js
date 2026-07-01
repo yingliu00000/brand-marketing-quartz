@@ -10,10 +10,16 @@ const newChatButton = document.querySelector("#newChat");
 const sessionsEl = document.querySelector("#sessions");
 const historySearch = document.querySelector("#historySearch");
 const statusEl = document.querySelector("#connectionStatus");
+const modelSelect = document.querySelector("#modelSelect");
 
 const STORAGE_KEY = "brand-marketing-chat-sessions";
+const MODEL_KEY = "brand-marketing-chat-model";
 let sessions = loadSessions();
 let activeSessionId = sessions[0]?.id || createSession().id;
+
+if (modelSelect) {
+  modelSelect.value = localStorage.getItem(MODEL_KEY) || "deepseek-v4-flash";
+}
 
 function loadSessions() {
   try {
@@ -70,12 +76,47 @@ function formatMessage(text) {
     .replace(/\n/g, "<br>");
 }
 
+function sourceTemplate(source, index) {
+  const title = source.title || "未命名文章";
+  const meta = [source.account, source.date].filter(Boolean).join(" · ");
+  const url = source.url || "";
+  const link = url
+    ? `<a class="source-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">打开原文</a>`
+    : `<span class="source-link muted">无原文链接</span>`;
+
+  return `
+    <li class="source-item">
+      <div class="source-index">${index + 1}</div>
+      <div class="source-main">
+        <div class="source-title">${escapeHtml(title)}</div>
+        ${meta ? `<div class="source-meta">${escapeHtml(meta)}</div>` : ""}
+      </div>
+      ${link}
+    </li>
+  `;
+}
+
+function sourcesTemplate(sources) {
+  if (!Array.isArray(sources) || sources.length === 0) return "";
+  return `
+    <div class="sources">
+      <div class="sources-heading">参考原文</div>
+      <ol class="source-list">
+        ${sources.slice(0, 6).map(sourceTemplate).join("")}
+      </ol>
+    </div>
+  `;
+}
+
 function messageTemplate(message) {
   const avatar = message.role === "user" ? "你" : "营";
   return `
     <article class="message ${message.role}">
       <div class="avatar">${avatar}</div>
-      <div class="bubble"><p>${formatMessage(message.content)}</p></div>
+      <div class="bubble">
+        <p>${formatMessage(message.content)}</p>
+        ${message.role === "assistant" ? sourcesTemplate(message.sources) : ""}
+      </div>
     </article>
   `;
 }
@@ -159,12 +200,15 @@ async function sendMessage(text) {
   renderMessages();
 
   try {
+    const selectedModel = modelSelect?.value || "deepseek-v4-flash";
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: selectedModel,
         messages: session.messages
           .filter((message) => message.content !== "正在调用 DeepSeek 分析...")
+          .map((message) => ({ role: message.role, content: message.content }))
           .slice(-10),
       }),
     });
@@ -175,9 +219,12 @@ async function sendMessage(text) {
     }
 
     assistantMessage.content = data.answer || "DeepSeek 没有返回内容。";
-    statusEl.textContent = "DeepSeek 已接入";
+    assistantMessage.sources = data.sources || [];
+    assistantMessage.model = data.model || selectedModel;
+    statusEl.textContent = `DeepSeek ${assistantMessage.model.includes("pro") ? "Pro" : "Flash"} 已接入`;
   } catch (error) {
     assistantMessage.content = `暂时没有连上 DeepSeek 后端：${error.message}\n\n如果这是刚部署的页面，需要先在阿里云后端配置 DEEPSEEK_API_KEY，并把前端 apiBase 指向后端域名。`;
+    assistantMessage.sources = [];
     statusEl.textContent = "等待后端连接";
   } finally {
     saveSessions();
@@ -211,6 +258,10 @@ newChatButton.addEventListener("click", () => {
 });
 
 historySearch?.addEventListener("input", renderSessions);
+modelSelect?.addEventListener("change", () => {
+  localStorage.setItem(MODEL_KEY, modelSelect.value);
+  statusEl.textContent = `DeepSeek ${modelSelect.value.includes("pro") ? "Pro" : "Flash"} 已选择`;
+});
 
 renderMessages();
 renderSessions();
