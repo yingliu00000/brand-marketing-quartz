@@ -7,6 +7,11 @@
     <title>品牌营销知识库</title>
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      window.BRAND_CHAT_CONFIG = {
+        apiBase: "https://brand-mchat-api-bfocxjztup.cn-beijing.fcapp.run",
+      };
+    </script>
   </head>
   <body>
     <div class="app">
@@ -47,19 +52,28 @@
           <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="打开导航">☰</button>
           <div class="top-title">
             <strong>品牌营销知识库</strong>
-            <span>DeepSeek 接入准备中</span>
+            <span id="connectionStatus">DeepSeek 已接入</span>
           </div>
           <div class="status-pill">精选知识入口</div>
         </header>
 
-        <section id="messages" class="messages">
+        <section id="messages" class="messages" aria-live="polite">
           <div class="empty">
             <h1>今天想拆哪个品牌营销问题？</h1>
-            <p>可以问增长策略、私域运营、内容营销、消费者洞察、品牌案例和品类趋势。公开页面只展示精选入口，不暴露全量文章库。</p>
+            <p>
+              可以问增长策略、私域运营、内容营销、消费者洞察、品牌案例和品类趋势。
+              公开页面只提供问答入口，不展示全量文章库。
+            </p>
             <div class="prompts">
-              <button type="button" data-prompt="帮我拆一个新消费品牌的增长策略，先看哪些维度？">新消费品牌增长，先看哪些维度？</button>
-              <button type="button" data-prompt="小红书内容种草怎么判断是不是有效？">小红书种草效果怎么判断？</button>
-              <button type="button" data-prompt="私域复购体系应该怎么搭？">私域复购体系怎么搭？</button>
+              <button type="button" data-prompt="帮我拆一个新消费品牌的增长策略，先看哪些维度？">
+                新消费品牌增长，先看哪些维度？
+              </button>
+              <button type="button" data-prompt="小红书内容种草怎么判断是不是有效？">
+                小红书种草效果怎么判断？
+              </button>
+              <button type="button" data-prompt="私域复购体系应该怎么搭？">
+                私域复购体系怎么搭？
+              </button>
             </div>
           </div>
         </section>
@@ -68,7 +82,7 @@
           <textarea id="input" rows="1" placeholder="问品牌营销知识库任何策略、案例或方法论问题"></textarea>
           <div class="composer-toolbar">
             <button class="tool-button" type="button" aria-label="附件占位">＋</button>
-            <button id="send" class="send-button" type="submit" aria-label="发送">↑</button>
+            <button id="send" class="send-button" type="submit" aria-label="发送">↗</button>
           </div>
         </form>
       </main>
