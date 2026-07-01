@@ -54,7 +54,16 @@
             <strong>品牌营销知识库</strong>
             <span id="connectionStatus">DeepSeek 已接入</span>
           </div>
-          <div class="status-pill">精选知识入口</div>
+          <div class="top-actions">
+            <label class="model-picker" aria-label="选择 DeepSeek 模型">
+              <span>模型</span>
+              <select id="modelSelect">
+                <option value="deepseek-v4-flash">Flash</option>
+                <option value="deepseek-v4-pro">Pro</option>
+              </select>
+            </label>
+            <div class="status-pill">全量知识入口</div>
+          </div>
         </header>
 
         <section id="messages" class="messages" aria-live="polite">
