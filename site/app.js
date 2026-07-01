@@ -294,6 +294,7 @@ function setBusy(isBusy) {
 function openAccountModal() {
   accountNameInput.value = account?.name || "";
   userApiKeyInput.value = account?.userApiKey || "";
+  userApiKeyInput.dataset.touched = "false";
   accountModal.hidden = false;
   setTimeout(() => accountNameInput.focus(), 0);
 }
@@ -307,6 +308,7 @@ function switchAccount(name, userApiKey) {
   if (!id) return;
 
   const saved = loadAccount(id);
+  const keyWasEdited = userApiKeyInput.dataset.touched === "true";
   account = saved || {
     id,
     name: name.trim(),
@@ -315,7 +317,9 @@ function switchAccount(name, userApiKey) {
     createdAt: Date.now(),
   };
   account.name = name.trim();
-  account.userApiKey = userApiKey.trim();
+  if (keyWasEdited) {
+    account.userApiKey = userApiKey.trim();
+  }
   saveAccount();
   activeAccountId = account.id;
   sessions = loadSessions();
@@ -443,6 +447,12 @@ settingsButton?.addEventListener("click", openAccountModal);
 closeAccountModal?.addEventListener("click", closeModal);
 accountModal?.addEventListener("click", (event) => {
   if (event.target === accountModal) closeModal();
+});
+userApiKeyInput?.addEventListener("input", () => {
+  userApiKeyInput.dataset.touched = "true";
+});
+userApiKeyInput?.addEventListener("paste", () => {
+  userApiKeyInput.dataset.touched = "true";
 });
 saveAccountButton?.addEventListener("click", () => {
   switchAccount(accountNameInput.value, userApiKeyInput.value);
