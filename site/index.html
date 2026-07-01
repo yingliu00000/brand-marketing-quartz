@@ -62,7 +62,7 @@
                 <option value="deepseek-v4-pro">Pro</option>
               </select>
             </label>
-            <div class="status-pill">全量知识入口</div>
+            <button id="accountButton" class="account-button" type="button">登录</button>
           </div>
         </header>
 
@@ -88,13 +88,39 @@
         </section>
 
         <form id="composer" class="composer">
+          <div id="quotaNotice" class="quota-notice"></div>
           <textarea id="input" rows="1" placeholder="问品牌营销知识库任何策略、案例或方法论问题"></textarea>
           <div class="composer-toolbar">
-            <button class="tool-button" type="button" aria-label="附件占位">＋</button>
+            <button id="settingsButton" class="tool-button" type="button" aria-label="设置">⚙</button>
             <button id="send" class="send-button" type="submit" aria-label="发送">↗</button>
           </div>
         </form>
       </main>
+    </div>
+
+    <div id="accountModal" class="modal-backdrop" hidden>
+      <section class="modal" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+        <div class="modal-header">
+          <div>
+            <h2 id="accountTitle">账号与额度</h2>
+            <p>每个浏览器账号免费 5 个问题；用完后填入自己的 DeepSeek API Key 继续提问。</p>
+          </div>
+          <button id="closeAccountModal" class="icon-close" type="button" aria-label="关闭">×</button>
+        </div>
+
+        <label class="field">
+          <span>账号名</span>
+          <input id="accountName" type="text" autocomplete="username" placeholder="例如：lily / 客户A / team01" />
+        </label>
+        <label class="field">
+          <span>DeepSeek API Key（可选）</span>
+          <input id="userApiKey" type="password" autocomplete="off" placeholder="免费额度用完后填写 sk-..." />
+        </label>
+        <div class="modal-actions">
+          <button id="logoutButton" class="secondary-button" type="button">退出当前账号</button>
+          <button id="saveAccountButton" class="primary-button" type="button">保存</button>
+        </div>
+      </section>
     </div>
 
     <script src="app.js"></script>
